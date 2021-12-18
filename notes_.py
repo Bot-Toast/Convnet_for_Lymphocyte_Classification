@@ -1,4 +1,5 @@
 # https://www.youtube.com/watch?v=qFJeN9V1ZsI /keras tutorials
+# Notes for the entire project.
 
 """
 
@@ -21,7 +22,12 @@ Loss Functions:
 Notes:
     Single pass of data is called an Epoch.
 
-Steps to take for the dissertation:
+
+Problems/Limitations:
+    Lack of equal volume data-sets.
+
+
+Questions/decisions dissertation:
     build a prototype
     fill out a tech milestone
 
