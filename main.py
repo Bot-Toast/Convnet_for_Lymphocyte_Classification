@@ -1,9 +1,11 @@
 # Utility imports
 import glob
+
 import numpy
 
 # matplot for drawing graphs/images
 import numpy as np
+from keras.layers import Rescaling
 from matplotlib import pyplot as pyplt
 
 import tensorflow as tf
@@ -46,7 +48,7 @@ tf.config.experimental.set_memory_growth(physical_devices[0], True)
 """
 
 # Constructed Numpy arrays for dataset labels and samples.
-train_set_labels = []
+train_set_labels = ["non-stressed", "stressed"]
 train_set_samples = []
 
 # import datasets to array
@@ -66,7 +68,6 @@ It then pulls each file from the directory specified making sure to set:
 image size, labels, and batch size.
 """
 
-
 training_set = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg16.preprocess_input). \
     flow_from_directory(directory=train_file_path, target_size=(360, 360),
                         classes=['non-stressed', 'stressed'], batch_size=16)
@@ -75,12 +76,14 @@ validation_set = ImageDataGenerator(preprocessing_function=tf.keras.applications
     flow_from_directory(directory=valid_file_path, target_size=(360, 360),
                         classes=['non-stressed', 'stressed'], batch_size=16)
 
-test_set = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg19.preprocess_input). \
+test_set = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg16.preprocess_input). \
     flow_from_directory(directory=control_file_path, target_size=(360, 360),
-                        classes=[''], batch_size=10, shuffle=False)
+                        classes=['non-stressed', 'stressed'], batch_size=10,
+                        shuffle=False)
 
 imgs, labels = next(training_set)
-
+imgss, labelss = next(test_set)
+imgsss, labelsss = next(validation_set)
 
 def image_plot(image_array):
     fig, axes = pyplt.subplots(1, 10, figsize=(20, 20))
@@ -91,12 +94,20 @@ def image_plot(image_array):
     pyplt.tight_layout()
     pyplt.show()
 
+
 image_plot(imgs)
+image_plot(imgss)
+image_plot(imgsss)
 print(labels)
+
+
 
 """
 model = Sequential([
-    Convolution2D(filters=62, kernel_size=(3, 3), activation='relu', padding='same', input_shape=(360, 360, 3)),
+    RandomFlip("horizontal", input_shape=(360, 360, 3)),
+    RandomRotation(0.1),
+    RandomZoom(0.1),
+    Convolution2D(filters=62, kernel_size=(3, 3), activation='relu', padding='same'),
     MaxPool2D(pool_size=(2, 2), strides=2),
     Convolution2D(filters=32, kernel_size=(3, 3), activation='relu', padding='same'),
     MaxPool2D(pool_size=(2, 2), strides=2),
@@ -107,10 +118,11 @@ model = Sequential([
 """
 
 model = Sequential([
-    Dense(32, activation='relu', input_shape=(360, 360, 3)),
+    Rescaling(1./255, input_shape=(360, 360, 3)),
     RandomFlip("horizontal"),
     RandomRotation(0.1),
     RandomZoom(0.1),
+    Dense(32, activation='relu'),
     Dense(16, activation='relu'),
     Dense(8, activation='relu'),
     Dropout(0.2),
@@ -124,13 +136,35 @@ model.compile(optimizer=Adam(learning_rate=0.0001),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-model.fit(x=training_set,
+history = model.fit(x=training_set,
           validation_data=validation_set,
           epochs=10,
           verbose=2)
 
 model.evaluate(training_set)
 model.evaluate(validation_set)
+
+acc = (history.history['accuracy'])
+val_acc = (history.history['val_accuracy'])
+
+loss = (history.history['loss'])
+val_loss = (history.history['val_loss'])
+
+epochs_range = range(10)
+
+pyplt.figure(figsize=(8, 8))
+pyplt.subplot(1, 2, 1)
+pyplt.plot(epochs_range, acc, label='Training Accuracy')
+pyplt.plot(epochs_range, val_acc, label='Validation Accuracy')
+pyplt.legend(loc='lower right')
+pyplt.title('Training and Validation Accuracy')
+
+pyplt.subplot(1, 2, 2)
+pyplt.plot(epochs_range, loss, label='Training Loss')
+pyplt.plot(epochs_range, val_loss, label='Validation Loss')
+pyplt.legend(loc='upper right')
+pyplt.title('Training and Validation Loss')
+pyplt.show()
 
 """
 images = tf.keras.preprocessing.image.load_img(
@@ -139,15 +173,15 @@ images = tf.keras.preprocessing.image.load_img(
 img_array = tf.keras.preprocessing.image.img_to_array(images)
 img_array = tf.expand_dims(img_array, 0) """
 
-predictions = model.predict(test_set)
+predictions = model.predict(x=test_set)
+print(np.round(predictions))
+
+
 for i in range(len(predictions)):
-    score = tf.nn.softmax(predictions[0])
-    #score2: float = score
+    score = predictions[i]
+    # score2: float = score
     print("this image is likely {} with a {:.2f} percent confidence".
-          format(labels[np.argmax(score)], 100*np.max(score)))
-
-
-
+          format(train_set_labels[np.argmax(score)], 100 * np.max(score)))
 
 """
 # Preprocess data
@@ -160,18 +194,6 @@ for i in range(len(predictions)):
 
 # Neural Network topology / Model Architecture
 
-conv_neural_net = Sequential()
-
-conv_neural_net.addDense(64, activation='relu', input_shape=(32,))
-conv_neural_net.add(BatchNormalization())
-
-conv_neural_net.addDense(32, activation='relu')
-conv_neural_net.add(BatchNormalization())
-
-conv_neural_net.addDense(16, activation='relu')
-conv_neural_net.add(BatchNormalization())
-
-conv_neural_net.addDense(2, activation='softmax')
 
 # Model configuration
 
