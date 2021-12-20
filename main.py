@@ -1,6 +1,9 @@
 # Utility imports
+import glob
+import numpy
 
 # matplot for drawing graphs/images
+import numpy as np
 from matplotlib import pyplot as pyplt
 
 import tensorflow as tf
@@ -9,6 +12,10 @@ from tensorflow import keras
 
 # Activation functions
 from tensorflow.keras.layers import Activation
+
+# Overfitting reduction
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import BatchNormalization
 
 # Model Optimisation
 from tensorflow.keras.optimizers import SGD
@@ -29,6 +36,7 @@ from tensorflow.keras.models import Sequential
 # Network layer apis
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Convolution2D, MaxPool2D, Flatten
+from tensorflow.python.keras.layers import RandomFlip, RandomRotation, RandomZoom
 
 """
 Setup GPU compute!
@@ -59,17 +67,17 @@ image size, labels, and batch size.
 """
 
 
-training_set = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg19.preprocess_input). \
+training_set = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg16.preprocess_input). \
     flow_from_directory(directory=train_file_path, target_size=(360, 360),
-                        classes=['non-stressed', 'stressed'], batch_size=10)
+                        classes=['non-stressed', 'stressed'], batch_size=16)
 
-validation_set = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg19.preprocess_input). \
+validation_set = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg16.preprocess_input). \
     flow_from_directory(directory=valid_file_path, target_size=(360, 360),
-                        classes=['non-stressed', 'stressed'], batch_size=10)
+                        classes=['non-stressed', 'stressed'], batch_size=16)
 
 test_set = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg19.preprocess_input). \
     flow_from_directory(directory=control_file_path, target_size=(360, 360),
-                        classes=['non-stressed', 'stressed'], batch_size=10, shuffle=False)
+                        classes=[''], batch_size=10, shuffle=False)
 
 imgs, labels = next(training_set)
 
@@ -86,13 +94,28 @@ def image_plot(image_array):
 image_plot(imgs)
 print(labels)
 
+"""
 model = Sequential([
-    Convolution2D(filters=32, kernel_size=(3, 3), activation='relu', padding='same', input_shape=(360, 360, 3)),
+    Convolution2D(filters=62, kernel_size=(3, 3), activation='relu', padding='same', input_shape=(360, 360, 3)),
     MaxPool2D(pool_size=(2, 2), strides=2),
-    Convolution2D(filters=64, kernel_size=(3, 3), activation='relu', padding='same'),
+    Convolution2D(filters=32, kernel_size=(3, 3), activation='relu', padding='same'),
     MaxPool2D(pool_size=(2, 2), strides=2),
+    Dropout(0.2),
     Flatten(),
-    Dense(units=2, activation='softmax'),
+    Dense(2, activation='softmax'),
+])
+"""
+
+model = Sequential([
+    Dense(32, activation='relu', input_shape=(360, 360, 3)),
+    RandomFlip("horizontal"),
+    RandomRotation(0.1),
+    RandomZoom(0.1),
+    Dense(16, activation='relu'),
+    Dense(8, activation='relu'),
+    Dropout(0.2),
+    Flatten(),
+    Dense(2, activation='softmax')
 ])
 
 model.summary()
@@ -103,11 +126,28 @@ model.compile(optimizer=Adam(learning_rate=0.0001),
 
 model.fit(x=training_set,
           validation_data=validation_set,
-          epochs=5,
+          epochs=10,
           verbose=2)
 
 model.evaluate(training_set)
 model.evaluate(validation_set)
+
+"""
+images = tf.keras.preprocessing.image.load_img(
+    test_set, target_size=(360, 360)
+)
+img_array = tf.keras.preprocessing.image.img_to_array(images)
+img_array = tf.expand_dims(img_array, 0) """
+
+predictions = model.predict(test_set)
+for i in range(len(predictions)):
+    score = tf.nn.softmax(predictions[0])
+    #score2: float = score
+    print("this image is likely {} with a {:.2f} percent confidence".
+          format(labels[np.argmax(score)], 100*np.max(score)))
+
+
+
 
 """
 # Preprocess data
