@@ -31,7 +31,7 @@ Questions/decisions dissertation:
     build a prototype
     fill out a tech milestone
 
-    for the model consider:
+    for the conv_net consider:
         what the data is?
             what bias it contains?
                 any artifacts?
@@ -45,7 +45,7 @@ Questions/decisions dissertation:
             when should the data be pre-processed?
         Learning requirements?
             What are we trying to predict or ascertain from the images?
-            how can the model be programmed to fulfil this?
+            how can the conv_net be programmed to fulfil this?
             what other requirements are required?
                 pipeline to correct mistakes.
         Learning style?
@@ -81,7 +81,7 @@ Questions/decisions dissertation:
             How will the validation set be constructed?
                 Using a separate data set?
                 Or using a partition of data within the training set?
-                Explain why these methods are beneficial or not to this model.
+                Explain why these methods are beneficial or not to this conv_net.
             How this project countered overfitting?
                 how did the project know it was overfitting?
                 what were the effects of overfitting on this project?

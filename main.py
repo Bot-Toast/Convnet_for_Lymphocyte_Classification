@@ -1,66 +1,34 @@
 # Utility imports
-import glob
-from typing import List
-
 import data_visualiser as dfv
-import pandas as pds
-
-
-
-import numpy
-
-# matplot for drawing graphs/images
-import numpy as np
-from keras.layers import Rescaling
-from matplotlib import pyplot as pyplt
-
+import utility_functions
 import tensorflow as tf
 
-from tensorflow import keras
-
-# Activation functions
-from tensorflow.keras.layers import Activation
-
-# Overfitting reduction
-from tensorflow.keras.layers import Dropout
-from tensorflow.keras.layers import BatchNormalization
+# Overfitting reduction in a model.
+from tensorflow.keras.layers import Dropout, BatchNormalization
 
 # Model Optimisation
-from tensorflow.keras.optimizers import SGD
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.optimizers import Nadam
+from tensorflow.keras.optimizers import Adam, SGD, Nadam
 
-# Model Metrics
-from tensorflow.keras.metrics import sparse_categorical_crossentropy
-from tensorflow.keras.metrics import categorical_crossentropy
-from sklearn.metrics import confusion_matrix
+# Loss functions.
+from tensorflow.keras.losses import categorical_crossentropy, binary_crossentropy
 
-# Image pre-processing
+# Image pre-processing and Data augmentation
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-from tensorflow.keras.utils import to_categorical
-
+# Model type
 from tensorflow.keras.models import Sequential
 
-# Network layer apis
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Convolution2D, MaxPool2D, Flatten
-from tensorflow.python.keras.layers import RandomFlip, RandomRotation, RandomZoom
+# Network layer types.
+from tensorflow.keras.layers import Dense, Convolution2D, MaxPool2D, AvgPool2D, Flatten
+
 
 """
-Setup GPU compute!
+This just verifies a GPU is available for computations.
+"""
+
 physical_devices = tf.config.experimental.list_physical_devices('GPU')
-print("num gpus available: ", len(physical_devices))
-tf.config.experimental.set_memory_growth(physical_devices[0], True)
-"""
+print(f"GPU available: {len(physical_devices)}")
 
-# Constructed Numpy arrays for dataset labels and samples.
-train_set_labels = ["non-stressed", "stressed"]
-train_set_samples = []
-df = pds.DataFrame()
-df.insert(0, 'file', str)
-df.insert(1, 'prediction', str)
-df.insert(2, 'percentage', str)
 
 # import datasets to array
 
@@ -68,34 +36,50 @@ df.insert(2, 'percentage', str)
 train_file_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Train'
 # Subset of the above categories.
 valid_file_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Validation'
-# A dataset with mixed unlabeled images.
+# A dataset with mixed evaluation images.
 control_file_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Test'
 
-#  preprocessing data
+# set epoch
+epoch_max = 40
 
 """
-Preprocesses datasets, using a vgg16 (need to research this, seems commonly used in convnet).
-It then pulls each file from the directory specified making sure to set:
-image size, labels, and batch size.
-
-preprocessing_function=tf.keras.applications.vgg16.preprocess_input
-preprocessing_function=tf.keras.applications.resnet50.preprocess_input
-preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
-preprocessing_function=tf.keras.applications.mobilenet.preprocess_input
+The ImageDataGenerator parameters augment data, to add variance to the model.
+This reduces overfitting. The added Flow_from function iterates files in a directory.
 """
 
-training_set = ImageDataGenerator().\
-    flow_from_directory(directory=train_file_path, target_size=(360, 363),
-                        classes=['non-stressed', 'stressed'], batch_size=16)
+training_set = ImageDataGenerator(rescale=1 / 255.,
+                                  vertical_flip=True,
+                                  horizontal_flip=True,
+                                  rotation_range=90,
+                                  zoom_range=0.15,
+                                  width_shift_range=0.2,
+                                  height_shift_range=0.2,
+                                  shear_range=0.15,
+                                  brightness_range=[0.1, 2.0]). \
+    flow_from_directory(directory=train_file_path, target_size=(360, 360),
+                        classes=['non-stressed', 'stressed'], batch_size=12)
 
-validation_set = ImageDataGenerator(). \
-    flow_from_directory(directory=valid_file_path, target_size=(360, 363),
-                        classes=['non-stressed', 'stressed'], batch_size=16)
+validation_set = ImageDataGenerator(rescale=1 / 255.,
+                                    vertical_flip=True,
+                                    horizontal_flip=True,
+                                    rotation_range=90,
+                                    zoom_range=0.15,
+                                    width_shift_range=0.2,
+                                    height_shift_range=0.2,
+                                    shear_range=0.15,
+                                    brightness_range=[0.1, 2.0]). \
+    flow_from_directory(directory=valid_file_path, target_size=(360, 360),
+                        classes=['non-stressed', 'stressed'], batch_size=12)
 
 test_set = ImageDataGenerator(). \
-    flow_from_directory(directory=control_file_path, target_size=(360, 363),
+    flow_from_directory(directory=control_file_path, target_size=(360, 360),
                         classes=['non-stressed', 'stressed'], batch_size=24,
                         shuffle=False)
+
+"""
+These are here just to visualise the type of data going in.
+May not be required at a later stage or should be reduced at the very least.
+"""
 
 imgs, labels = next(training_set)
 imgss, labelss = next(test_set)
@@ -106,133 +90,76 @@ dfv.image_plot(imgss)
 dfv.image_plot(imgsss)
 print(labels)
 
-"""
-model = Sequential([
-    Rescaling(1./255, input_shape=(360, 360, 3)),
-    RandomFlip("vertical"),
-    RandomRotation(0.2),
-    RandomFlip("horizontal"),
-    RandomZoom(0.2),
-    Convolution2D(filters=6, kernel_size=(5, 5), activation='relu', padding='same'),
-    MaxPool2D(pool_size=(2, 2), strides=2),
-    Convolution2D(filters=16, kernel_size=(3, 3), activation='relu', padding='same'),
-    MaxPool2D(pool_size=(2, 2), strides=2),
-    Flatten(),
-    Dense(120, activation='relu'),
-    Dense(84, activation='relu'),
-    Dense(2, activation='softmax'),
-])
-"""
-
-model = Sequential([
-    Rescaling(1. / 255, input_shape=(360, 363, 3)),
-    RandomFlip("horizontal"),
-    RandomRotation(0.1),
-    RandomZoom(0.1),
-    Dense(8, activation='relu'),
-    Dense(32, activation='relu'),
-    Dense(64, activation='relu'),
-    Dropout(0.2),
-    Flatten(),
-    Dense(2, activation='softmax')
-])
-
-
-model.summary()
-
-model.compile(optimizer=Adam(learning_rate=0.0005),
-              loss=categorical_crossentropy,
-              metrics=['accuracy'])
-
-history = model.fit(x=training_set,
-                    validation_data=validation_set,
-                    epochs=15,
-                    verbose=2)
-
-model.evaluate(training_set)
-model.evaluate(validation_set)
 
 """
-images = tf.keras.preprocessing.image.load_img(
-    test_set, target_size=(360, 360)
-)
-img_array = tf.keras.preprocessing.image.img_to_array(images)
-img_array = tf.expand_dims(img_array, 0) """
+Neural Network topology / Model Architecture
+Filters and layer amounts were arbitrarily chosen initially,
+but over time have been modified to help the model fit.
+These numbers still require a good tuning.
+This model was based on googLEnet layer stacking using 3x1/1x3 vs 5x5 to save computation time. 
+"""
 
-# Preprocess data
+conv_net = Sequential()
 
+# Input Layer
+conv_net.add(Convolution2D(filters=128, kernel_size=(3, 3), padding='same',
+                           activation='relu', input_shape=(360, 360, 3)))
 
-# Data Augmentation function with image plot
+# Convolutional Layers
+conv_net.add(Convolution2D(64, (3, 1), padding='same', activation='relu'))
+conv_net.add(Convolution2D(64, (1, 3), activation='relu'))
+conv_net.add(MaxPool2D((2, 2), strides=2))
+conv_net.add(Dropout(0.2))
 
+conv_net.add(Convolution2D(32, (3, 3), padding='same', activation='relu'))
+conv_net.add(Convolution2D(32, (3, 3), activation='relu'))
+conv_net.add(MaxPool2D((2, 2), strides=2))
+conv_net.add(Dropout(0.2))
 
-# Neural Network topology / Model Architecture
+conv_net.add(Convolution2D(16, (3, 3), padding='same', activation='relu'))
+conv_net.add(Convolution2D(16, (3, 3), activation='relu'))
+conv_net.add(MaxPool2D((2, 2), strides=2))
+conv_net.add(Dropout(0.2))
 
-
-# Model configuration
-
-
-# Visualises training and validation metrics
-
-acc = (history.history['accuracy'])
-val_acc = (history.history['val_accuracy'])
-
-loss = (history.history['loss'])
-val_loss = (history.history['val_loss'])
-
-epochs_range = range(15)
-
-pyplt.figure(figsize=(8, 8))
-pyplt.subplot(1, 2, 1)
-pyplt.plot(epochs_range, acc, label='Training Accuracy')
-pyplt.plot(epochs_range, val_acc, label='Validation Accuracy')
-pyplt.legend(loc='lower right')
-pyplt.title('Training and Validation Accuracy')
-
-pyplt.subplot(1, 2, 2)
-pyplt.plot(epochs_range, loss, label='Training Loss')
-pyplt.plot(epochs_range, val_loss, label='Validation Loss')
-pyplt.legend(loc='upper right')
-pyplt.title('Training and Validation Loss')
-pyplt.show()
-
-# Predicition
-
-predictions = model.predict(x=test_set)
-np1: list[str] = []
-np2: list[str] = []
-for i in range(len(predictions)):
-    score = predictions[i]
-    score2: str = "{}".format(train_set_labels[np.argmax(score)])
-    print(f"THIS IS SCORE2: {score2}")
-    # cont = test_set.filepaths[i]
-    score3: str = ("{:.2f}".format(100 * np.max(score)))
-    print(f"THIS IS SCORE3: {score3}")
-    np1.append(score2)
-    np2.append(score3)
-    print('dataframe columns: ', df.columns)
-    print("this image is called: {} is likely classified as: {} with a: {:.2f} percent confidence".
-          format(test_set.filepaths[i], train_set_labels[np.argmax(score)], 100 * np.max(score)))
+conv_net.add(Convolution2D(8, (3, 3), padding='same', activation='relu'))
+conv_net.add(Convolution2D(8, (3, 3), activation='relu'))
+conv_net.add(MaxPool2D((2, 2), strides=2))
+conv_net.add(Dropout(0.2))
 
 
-print(np.round(predictions))
-df['file'] = test_set.filepaths
-df['prediction'] = np1
-df['percentage'] = np2
-classes = np.argmax(predictions, axis=1)
-print(classes)
-df.to_csv(f"Results" + ".csv")
+# Fully connected Dense layers
+conv_net.add(Flatten())  # flattens image data to a 1d array
+conv_net.add(Dense(512, activation='relu'))
+conv_net.add(Dropout(0.5))
+conv_net.add(Dense(2, activation='softmax'))
 
+# Ronsil.
+conv_net.summary()
+
+# Model Configuration / Hyper Parameters
+conv_net.compile(optimizer=Adam(learning_rate=0.000015),
+                 loss=categorical_crossentropy,
+                 metrics=['accuracy'])
+
+model_history = conv_net.fit(x=training_set,
+                             validation_data=validation_set,
+                             epochs=epoch_max,
+                             verbose=2)
+
+# I think there is too many comments at this point, but I can't stop.
+conv_net.evaluate(training_set)
+conv_net.evaluate(validation_set)
+
+# It displays nice graphs. https://imgflip.com/i/5z8zsv
+dfv.plot_results(epoch_max, model_history)
+
+
+# Inference call.
+predictions = conv_net.predict(x=test_set)
+
+# Results fed through this function that writes to disk.
+utility_functions.prediction_result_appender(predictions, test_set)
 
 
 
-
-# Confusion Matrix
-
-
-# Model Training & Validation
-
-
-# History and Model Evaluation
-
-
-# Panda Model Plot
+# Confusion Matrix TBA
