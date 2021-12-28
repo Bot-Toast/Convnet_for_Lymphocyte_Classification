@@ -13,7 +13,7 @@ rationale: To easily distribute large datasets into different collections, using
 I will probably forget how to use this in a week.
 """
 
-
+"""
 def file_renamer(cat, f_ext, file_path):
     os.chdir('E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Train\\Normal lymphomcytes')
     print(os.getcwd())
@@ -21,7 +21,7 @@ def file_renamer(cat, f_ext, file_path):
     for i, j in enumerate(os.listdir()):
         new_name = f'{cat}{i}.{f_ext}'
         os.rename(j, new_name)
-
+"""
 
 # to use this properly the sets must not be premixed. There is definitely a more elegant way of doing this.
 """
@@ -30,9 +30,10 @@ it will throw them in a folder ext with the same name as the class/category.
 set the integer to be a % of the total dataset volume. This can be done in code as well. 
 To avoid conflicts or hard to see errors it 'seems' easier to just use a function to split data into separate folders.
 """
-
+"""
 
 def rand_valid_selector(in_path, cat, out_path):
+    dir_str = input("enter a directory to move images from: ")
     os.chdir('E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets')
     for i in random.sample(glob.glob(f'{in_path}\\{cat}*.jpg'), 44):
         shutil.move(i, f'{out_path}\\{cat}')
@@ -40,7 +41,7 @@ def rand_valid_selector(in_path, cat, out_path):
 
 in_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\train\\big\\'
 out_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Validation\\'
-dir_str = input("enter a directory to move images from: ")
+
 klass = dir_str
 
 print(klass)
@@ -48,7 +49,7 @@ print(in_path)
 print(out_path)
 
 rand_valid_selector(in_path, klass, out_path)
-
+"""
 
 # It's a SIN!
 def prediction_result_appender(prediction_results, test_set):
