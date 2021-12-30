@@ -11,7 +11,7 @@ Disables GPU for Testing
 
 
 for i in range(1):
-    convolutional_model.run_conv_net(i)
+    convolutional_model.run_conv_net()
 
 # shallow_model.run_dense_net()
 

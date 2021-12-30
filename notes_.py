@@ -1,4 +1,3 @@
-# https://www.youtube.com/watch?v=qFJeN9V1ZsI /keras tutorials
 # Notes for the entire project.
 
 """
@@ -25,6 +24,8 @@ Notes:
 
 Problems/Limitations:
     Lack of equal volume data-sets.
+    vanishing gradient problems
+
 
 
 Questions/decisions dissertation:
