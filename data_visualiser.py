@@ -21,7 +21,7 @@ def image_plot(image_array):
 """
 REMOVE RUN_INT FROM FUNCTIONS WHEN NOT LOOP TESTING
 """
-def plot_results(epoch_count, model_history, run_int):
+def plot_results(epoch_count, model_history):
     acc = (model_history.history['accuracy'])
     val_acc = (model_history.history['val_accuracy'])
 

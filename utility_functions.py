@@ -55,7 +55,7 @@ rand_valid_selector(in_path, klass, out_path)
 REMOVE RUN_INT FROM FUNCTIONS WHEN NOT LOOP TESTING
 """
 # It's a SIN!
-def prediction_result_appender(prediction_results, test_set, run_int):
+def prediction_result_appender(prediction_results, test_set):
     train_labels = ["non-stressed", "stressed"]
     df = pds.DataFrame()
     df.insert(0, 'file', str)

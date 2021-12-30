@@ -24,7 +24,7 @@ from tensorflow.keras.layers import Dense, Convolution2D, MaxPool2D, AvgPool2D, 
 """
 REMOVE RUN_INT FROM FUNCTIONS WHEN NOT LOOP TESTING
 """
-def run_conv_net(run_int):
+def run_conv_net():
     # covid infected t-cells & healthy t-cells.
     train_file_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Train'
     # Subset of the above categories.
@@ -149,20 +149,20 @@ def run_conv_net(run_int):
                                  validation_data=validation_set,
                                  epochs=epoch_max,
                                  verbose=2)
-    conv_net.save(f'Models/my_model_run{run_int}')
+   # conv_net.save(f'Models/my_model_run{run_int}')
 
     # I think there is too many comments at this point, but I can't stop.
     conv_net.evaluate(training_set)
     conv_net.evaluate(validation_set)
 
     # It displays nice graphs. https://imgflip.com/i/5z8zsv
-    dfv.plot_results(epoch_max, model_history, run_int)
+    dfv.plot_results(epoch_max, model_history)
 
     # Inference call.
     predictions = conv_net.predict(x=test_set)
 
     # Results fed through this function that writes to disk.
-    pra(predictions, test_set, run_int)
+    pra(predictions, test_set)
 
     """
     
