@@ -82,7 +82,7 @@ def run_dense_net():
     """
 
     """
-    Neural Network topology / Model Architecture
+    Neural Network topology / Model Architecture.
     Filters and layer amounts were arbitrarily chosen initially,
     but over time have been modified to help the model fit.
     These numbers still require a good tuning.

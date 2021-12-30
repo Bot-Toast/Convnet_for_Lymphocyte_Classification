@@ -25,7 +25,7 @@ def file_renamer(cat, f_ext, file_path):
 
 # to use this properly the sets must not be premixed. There is definitely a more elegant way of doing this.
 """
-Currently, hardcoded for ease of use, just input the class/category str of the items and
+Currently, hardcoded for ease of use, just input the class/category str of the items, and
 it will throw them in a folder ext with the same name as the class/category.
 set the integer to be a % of the total dataset volume. This can be done in code as well. 
 To avoid conflicts or hard to see errors it 'seems' easier to just use a function to split data into separate folders.
