@@ -18,7 +18,10 @@ def image_plot(image_array):
     pyplt.show()
 
 
-def plot_results(epoch_count, model_history):
+"""
+REMOVE RUN_INT FROM FUNCTIONS WHEN NOT LOOP TESTING
+"""
+def plot_results(epoch_count, model_history, run_int):
     acc = (model_history.history['accuracy'])
     val_acc = (model_history.history['val_accuracy'])
 
@@ -39,4 +42,5 @@ def plot_results(epoch_count, model_history):
     pyplt.plot(epochs_range, val_loss, label='Validation Loss')
     pyplt.legend(loc='upper right')
     pyplt.title('Training and Validation Loss')
+    pyplt.savefig(f"Model_run_{run_int}_post_norm_test_data" + ".png")
     pyplt.show()

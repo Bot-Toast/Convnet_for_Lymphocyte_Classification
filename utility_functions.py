@@ -51,8 +51,11 @@ print(out_path)
 rand_valid_selector(in_path, klass, out_path)
 """
 
+"""
+REMOVE RUN_INT FROM FUNCTIONS WHEN NOT LOOP TESTING
+"""
 # It's a SIN!
-def prediction_result_appender(prediction_results, test_set):
+def prediction_result_appender(prediction_results, test_set, run_int):
     train_labels = ["non-stressed", "stressed"]
     df = pds.DataFrame()
     df.insert(0, 'file', str)
@@ -80,4 +83,4 @@ def prediction_result_appender(prediction_results, test_set):
     df['percentage'] = np2
     classes = np.argmax(prediction_results, axis=1)
     print(classes)
-    df.to_csv(f"Results" + ".csv")
+    df.to_csv(f"Run_{run_int}_post_norm_test_data_CNN_Results" + ".csv")
