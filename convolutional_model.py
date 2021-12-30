@@ -24,6 +24,8 @@ from tensorflow.keras.layers import Dense, Convolution2D, MaxPool2D, AvgPool2D, 
 """
 REMOVE RUN_INT FROM FUNCTIONS WHEN NOT LOOP TESTING
 """
+
+
 def run_conv_net():
     # covid infected t-cells & healthy t-cells.
     train_file_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Train'
@@ -33,7 +35,7 @@ def run_conv_net():
     control_file_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Test'
 
     # set epoch
-    epoch_max = 10 #50
+    epoch_max = 10  # 50
 
     """
     The ImageDataGenerator parameters augment data, to add variance to the model.
@@ -149,7 +151,7 @@ def run_conv_net():
                                  validation_data=validation_set,
                                  epochs=epoch_max,
                                  verbose=2)
-   # conv_net.save(f'Models/my_model_run{run_int}')
+    # conv_net.save(f'Models/my_model_run{run_int}')
 
     # I think there is too many comments at this point, but I can't stop.
     conv_net.evaluate(training_set)

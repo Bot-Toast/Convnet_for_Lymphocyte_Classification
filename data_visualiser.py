@@ -42,5 +42,5 @@ def plot_results(epoch_count, model_history):
     pyplt.plot(epochs_range, val_loss, label='Validation Loss')
     pyplt.legend(loc='upper right')
     pyplt.title('Training and Validation Loss')
-    pyplt.savefig(f"Model_run_{run_int}_post_norm_test_data" + ".png")
+    pyplt.savefig(f"Model_run_post_norm_test_data" + ".png")
     pyplt.show()
