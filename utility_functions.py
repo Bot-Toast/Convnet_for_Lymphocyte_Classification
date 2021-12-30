@@ -83,4 +83,4 @@ def prediction_result_appender(prediction_results, test_set):
     df['percentage'] = np2
     classes = np.argmax(prediction_results, axis=1)
     print(classes)
-    df.to_csv(f"Run_{run_int}_post_norm_test_data_CNN_Results" + ".csv")
+    df.to_csv(f"Run_post_norm_test_data_CNN_Results" + ".csv")
