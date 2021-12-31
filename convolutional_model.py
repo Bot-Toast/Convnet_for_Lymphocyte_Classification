@@ -28,11 +28,11 @@ REMOVE RUN_INT FROM FUNCTIONS WHEN NOT LOOP TESTING
 
 def run_conv_net():
     # covid infected t-cells & healthy t-cells.
-    train_file_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Train'
+    train_file_path = 'E:\\Dissertation\\Dissertation_code\\s203594_DeepLearning_Image_classifier\\Datasets\\Train'
     # Subset of the above categories.
-    valid_file_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Validation'
+    valid_file_path = 'E:\\Dissertation\\Dissertation_code\\s203594_DeepLearning_Image_classifier\\Datasets\\Validation'
     # A dataset with mixed evaluation images.
-    control_file_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Test'
+    control_file_path = 'E:\\Dissertation\\Dissertation_code\\s203594_DeepLearning_Image_classifier\\Datasets\\Test'
 
     # set epoch
     epoch_max = 10  # 50
@@ -102,8 +102,7 @@ def run_conv_net():
     Neural Network topology / Model Architecture
     Filters and layer config was arbitrarily chosen initially,
     but over time have been modified to help the model fit better.
-    These numbers still require a good tuning.
-    This model was based on LeNet and uses layer stacking to save computation time. 
+    These numbers still require a good tuning. 
     """
 
     conv_net = Sequential()
@@ -166,40 +165,4 @@ def run_conv_net():
     # Results fed through this function that writes to disk.
     pra(predictions, test_set)
 
-    """
-    
-    BackUp Model-
-    
 
-    # Input Layer
-    conv_net.add(Convolution2D(filters=16, kernel_size=(11, 11), padding='same',
-                               activation='relu', input_shape=(360, 360, 3)))
-
-    # Convolutional Layers
-    conv_net.add(Convolution2D(64, (7, 7), padding='same', activation='relu'))
-    conv_net.add(Convolution2D(64, (7, 7), activation='relu'))
-    conv_net.add(MaxPool2D((2, 2), strides=4))
-    conv_net.add(Dropout(0.2))
-
-    conv_net.add(Convolution2D(32, (3, 3), padding='same', activation='relu'))
-    conv_net.add(Convolution2D(32, (3, 3), activation='relu'))
-    conv_net.add(MaxPool2D((2, 2), strides=2))
-    conv_net.add(Dropout(0.2))
-
-    conv_net.add(Convolution2D(16, (3, 1), padding='same', activation='relu'))
-    conv_net.add(Convolution2D(16, (1, 3), activation='relu'))
-    conv_net.add(MaxPool2D((2, 2), strides=1))
-    conv_net.add(Dropout(0.2))
-
-    conv_net.add(Convolution2D(8, (3, 3), padding='same', activation='relu'))
-    conv_net.add(Convolution2D(8, (3, 3), activation='relu'))
-    conv_net.add(MaxPool2D((2, 2), strides=1))
-    conv_net.add(Dropout(0.2))
-
-    # Fully connected Dense layers
-    conv_net.add(Flatten())  # flattens image data to a 1d array
-    conv_net.add(Dense(512, activation='relu'))
-    conv_net.add(Dropout(0.5))
-    conv_net.add(Dense(2, activation='softmax'))
-       
-    """

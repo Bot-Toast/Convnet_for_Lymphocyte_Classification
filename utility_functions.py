@@ -15,7 +15,7 @@ I will probably forget how to use this in a week.
 
 """
 def file_renamer(cat, f_ext, file_path):
-    os.chdir('E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Train\\Normal lymphomcytes')
+    os.chdir('E:\\Dissertation\\Dissertation_code\\s203594_DeepLearning_Image_classifier\\Datasets\\Train\\Normal lymphomcytes')
     print(os.getcwd())
 
     for i, j in enumerate(os.listdir()):
@@ -34,13 +34,13 @@ To avoid conflicts or hard to see errors it 'seems' easier to just use a functio
 
 def rand_valid_selector(in_path, cat, out_path):
     dir_str = input("enter a directory to move images from: ")
-    os.chdir('E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets')
+    os.chdir('E:\\Dissertation\\Dissertation_code\\s203594_DeepLearning_Image_classifier\\Datasets')
     for i in random.sample(glob.glob(f'{in_path}\\{cat}*.jpg'), 44):
         shutil.move(i, f'{out_path}\\{cat}')
 
 
-in_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\train\\big\\'
-out_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Validation\\'
+in_path = 'E:\\Dissertation\\Dissertation_code\\s203594_DeepLearning_Image_classifier\\Datasets\\train\\big\\'
+out_path = 'E:\\Dissertation\\Dissertation_code\\s203594_DeepLearning_Image_classifier\\Datasets\\Validation\\'
 
 klass = dir_str
 

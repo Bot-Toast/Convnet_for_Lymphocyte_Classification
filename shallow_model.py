@@ -26,11 +26,11 @@ REMOVE RUN_INT FROM FUNCTIONS WHEN NOT LOOP TESTING
 """
 def run_dense_net():
     # covid infected t-cells & healthy t-cells.
-    train_file_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Train'
+    train_file_path = 'E:\\Dissertation\\Dissertation_code\\s203594_DeepLearning_Image_classifier\\Datasets\\Train'
     # Subset of the above categories.
-    valid_file_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Validation'
+    valid_file_path = 'E:\\Dissertation\\Dissertation_code\\s203594_DeepLearning_Image_classifier\\Datasets\\Validation'
     # A dataset with mixed evaluation images.
-    control_file_path = 'E:\\Dissertation\\Dissertation_code\\find_the_bad_guys\\Datasets\\Test'
+    control_file_path = 'E:\\Dissertation\\Dissertation_code\\s203594_DeepLearning_Image_classifier\\Datasets\\Test'
 
     # set epoch
     epoch_max = 10
